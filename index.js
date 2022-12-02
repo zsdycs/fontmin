@@ -114,9 +114,7 @@ Fontmin.prototype.createStream = function () {
     }
 
     if (this.dest()) {
-        this.streams.push(
-            vfs.dest.apply(vfs, this.dest())
-        );
+    this.streams.push(vfs.dest.apply(vfs, this.dest()));
     }
 
     return combine(this.streams);
@@ -129,7 +127,6 @@ Fontmin.prototype.createStream = function () {
  * @api private
  */
 Fontmin.prototype.getFiles = function () {
-
     if (Buffer.isBuffer(this._src[0])) {
         return bufferToVinyl.stream(this._src[0]);
     }
@@ -151,7 +148,7 @@ Fontmin.plugins = [
     'css',
     'svg2ttf',
     'svgs2ttf',
-    'otf2ttf'
+  'otf2ttf',
 ];
 
 // export pkged plugins

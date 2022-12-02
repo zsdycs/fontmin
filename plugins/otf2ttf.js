@@ -23,17 +23,17 @@ var util = require('../lib/util');
  * @api public
  */
 module.exports = function (opts) {
-
-    opts = _.extend({clone: false, hinting: true}, opts);
+  opts = _.extend({ clone: false, hinting: true }, opts);
 
     // prepare subset
     var subsetText = util.getSubsetText(opts);
     opts.subset = util.string2unicodes(subsetText);
 
-    return through.ctor({
-        objectMode: true
-    }, function (file, enc, cb) {
-
+  return through.ctor(
+    {
+      objectMode: true,
+    },
+    function (file, enc, cb) {
         // check null
         if (file.isNull()) {
             cb(null, file);
@@ -66,13 +66,10 @@ module.exports = function (opts) {
 
         // try otf2ttf
         try {
-
             ttfObj = otf2ttfobject(b2ab(file.contents), opts);
 
             ttfBuffer = ab2b(new TTFWriter(opts).write(ttfObj));
-
-        }
-        catch (ex) {
+      } catch (ex) {
             cb(ex);
         }
 
@@ -81,8 +78,6 @@ module.exports = function (opts) {
             file.ttfObject = ttfObj;
             cb(null, file);
         }
-
-    });
-
+    },
+  );
 };
-

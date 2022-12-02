@@ -23,11 +23,10 @@ var util = require('../lib/util');
  * @return {Array}     glyfs array
  */
 function getSubsetGlyfs(ttf, subset) {
-
     var glyphs = [];
 
     var indexList = ttf.findGlyf({
-        unicode: subset || []
+    unicode: subset || [],
     });
 
     if (indexList.length) {
@@ -39,7 +38,6 @@ function getSubsetGlyfs(ttf, subset) {
     return glyphs;
 }
 
-
 /**
  * minifyFontObject
  *
@@ -49,7 +47,6 @@ function getSubsetGlyfs(ttf, subset) {
  * @return {Object}              ttfObject
  */
 function minifyFontObject(ttfObject, subset, plugin) {
-
     // check null
     if (subset.length === 0) {
         return ttfObject;
@@ -69,7 +66,6 @@ function minifyFontObject(ttfObject, subset, plugin) {
     return ttf.get();
 }
 
-
 /**
  * minifyTtf
  *
@@ -78,7 +74,6 @@ function minifyFontObject(ttfObject, subset, plugin) {
  * @return {Buffer}              buffer
  */
 function minifyTtf(contents, opts) {
-
     opts = opts || {};
 
     var ttfobj = contents;
@@ -87,23 +82,15 @@ function minifyTtf(contents, opts) {
         ttfobj = new TTFReader(opts).read(b2ab(contents));
     }
 
-    var miniObj = minifyFontObject(
-        ttfobj,
-        opts.subset,
-        opts.use
-    );
+  var miniObj = minifyFontObject(ttfobj, opts.subset, opts.use);
 
-    var ttfBuffer = ab2b(
-        new TTFWriter(opts).write(miniObj)
-    );
+  var ttfBuffer = ab2b(new TTFWriter(opts).write(miniObj));
 
     return {
         object: miniObj,
-        buffer: ttfBuffer
+    buffer: ttfBuffer,
     };
-
 }
-
 
 /**
  * glyph fontmin plugin
@@ -117,18 +104,17 @@ function minifyTtf(contents, opts) {
  * @api public
  */
 module.exports = function (opts) {
-
-    opts = _.extend({hinting: true, trim: true}, opts);
+  opts = _.extend({ hinting: true, trim: true }, opts);
 
     // prepare subset
     var subsetText = util.getSubsetText(opts);
     opts.subset = util.string2unicodes(subsetText);
 
-
-    return through.ctor({
-        objectMode: true
-    }, function (file, enc, cb) {
-
+  return through.ctor(
+    {
+      objectMode: true,
+    },
+    function (file, enc, cb) {
         // check null
         if (file.isNull()) {
             cb(null, file);
@@ -148,23 +134,16 @@ module.exports = function (opts) {
         }
 
         try {
-
             // write file buffer
-            var miniTtf = minifyTtf(
-                file.ttfObject || file.contents,
-                opts
-            );
+        var miniTtf = minifyTtf(file.ttfObject || file.contents, opts);
 
             file.contents = miniTtf.buffer;
             file.ttfObject = miniTtf.object;
 
             cb(null, file);
-
-        }
-        catch (err) {
+      } catch (err) {
             cb(err);
         }
-
-    });
-
+    },
+  );
 };
